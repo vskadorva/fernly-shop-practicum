@@ -1,0 +1,15 @@
+.stars {
+  display: inline-flex;
+  gap: 0.2rem;
+}
+
+.star {
+  font-size: 1.7rem;
+  line-height: 1;
+  color: #c9d3c6;
+  cursor: pointer;
+}
+
+.on {
+  color: #d39b1c;
+}
