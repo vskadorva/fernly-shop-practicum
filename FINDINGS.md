@@ -162,6 +162,42 @@ One entry per issue, ordered by severity: money and privacy first, then broken f
 - **Contradicts:** `docs/features/promo-codes.md`: “When a code is refused, the message is announced to screen-reader users as soon as it appears.”
 - **Suggested fix:** Render the error with `role="alert"`.
 
+### F-17. A sold-out plant says "Only 0 left"
+
+- **Where:** `StockBadge` (`web/src/components/StockBadge.tsx`), on every plant card with stock 0
+- **Category:** Components
+- **Impact:** A plant that cannot be bought still looks like it has a last few left, and the card shows "Only 0 left" next to "Out of stock".
+- **Evidence:** `web/cypress/component/StockBadge.cy.tsx` **C1** (executed): stock 1, 2, and 3 render "Only N left" and stock 4 and 20 render nothing, then stock 0 renders `Only 0 left`. Screenshot: `web/cypress/screenshots/StockBadge.cy.tsx/StockBadge -- C1 shows Only N left for 1, 2 or 3 and nothing at 0 or above 3 (failed).png`. `web/cypress/ui/stock-badge.cy.ts` **U1** (executed): the Chinese Money Plant card text includes `Only 0 left` beside "Out of stock". Screenshot: `web/cypress/screenshots/stock-badge.cy.ts/Browse stock badges -- U1 shows Only N left with the tags and never over the photo or save button (failed).png`. `tests/e2e/back-in-stock-browse.spec.ts` **E2** (executed): Chinese Money Plant and, after the last Thai Monstera is bought, that card too, still match `Only \d+ left`.
+- **Contradicts:** `docs/features/back-in-stock.md`: "At 0 the card shows only **Out of stock** — never **Only 0 left**."
+- **Suggested fix:** Render nothing when stock is 0; the card already shows "Out of stock".
+
+### F-18. The low-stock badge covers the photo and the save button
+
+- **Where:** `StockBadge` (`web/src/components/StockBadge.module.css` is `position: absolute; top: 0.6rem; right: 0.6rem`), the same corner as the save heart on the plant card
+- **Category:** Components
+- **Impact:** On a plant with 1, 2, or 3 left, the badge sits on the photo and on top of Save, so a customer cannot see that corner of the plant or press the heart.
+- **Evidence:** `tests/e2e/back-in-stock-browse.spec.ts` **E2** (executed): the badge box intersects the photo and the save button for String of Pearls, the Thai Monstera, and Hoya Carnosa at 1280×800, and for Pearls and Hoya at 390×844. The save click was skipped because the badge covered the button. `tests/visual/catalog.spec.ts` **Hoya Carnosa card (low stock)** (executed, snapshots not updated): `hoya-carnosa-card.png` differs by 189 pixels. The new pixels are an "Only 3 left" chip on the top-right of the photo, where the heart sits. U1 stopped on F-17 before its overlap check.
+- **Contradicts:** `docs/features/back-in-stock.md`: "The badge sits with the other tags under the plant's name. **It never covers the photo or the save button.**"
+- **Suggested fix:** Lay the badge out in the tag row under the name, and remove the absolute top-right position.
+
+### F-19. `a@b`, `name@`, and `@example.com` are accepted as notify addresses
+
+- **Where:** `POST /api/plants/{plantId}/notify`
+- **Category:** Business rules in the API
+- **Impact:** A mistyped address is stored and the page says the customer will be emailed there, so they never hear when the plant is back.
+- **Evidence:** `tests/api/back-in-stock.spec.ts` **A2** (executed): `a@b`, `name@`, and `@example.com` on `pl-pilea` each return 201 `{ status: subscribed, plantId: pl-pilea, email }` with that text. `plain`, `""`, and `{}` return 400 `validation_error`. `name@example.com` and `ava@fernly.test` still return 201 afterwards. `tests/e2e/back-in-stock.spec.ts` **E1** (executed): submitting `a@b` and `name@` replaces the form with "We'll email … when Chinese Money Plant is back." There is no alert. `tests/a11y/back-in-stock.spec.ts` **X1** therefore had no refusal on screen to scan.
+- **Contradicts:** `docs/features/back-in-stock.md`: "The email must be a full address like `name@example.com`; `a@b` or `name@` are refused." OpenAPI: "The email must be a full address like name@example.com"; 400 `validation_error`.
+- **Suggested fix:** Refuse an address that is not a full `name@example.com` shape with 400 `validation_error`, and show that message on the form.
+
+### F-20. Signing up again, including with different letter case, is accepted
+
+- **Where:** `POST /api/plants/{plantId}/notify`, and the plant page confirmation
+- **Category:** Business rules in the API
+- **Impact:** The shop can email the same person many times for one plant, and a repeat visit never says "You're already on the list".
+- **Evidence:** `tests/api/back-in-stock.spec.ts` **A3** (executed): the first `ava@fernly.test` on `pl-pilea` is 201, the same email on a sold-out `pl-thai` is 201, and another email on `pl-pilea` is 201. A second `ava@fernly.test` and then `AVA@Fernly.TEST` on `pl-pilea` are both 201, expected 409 `already_subscribed`. After `POST /api/admin/reset`, `ava@fernly.test` is 201 again. **SCH1** (executed): the second `schema@example.com` is 201, expected 409; the 201 `NotifyResult`, 400 `validation_error`, 400 `in_stock`, and 404 without `rule` matched their schemas. `tests/e2e/back-in-stock.spec.ts` **E1** (executed): after `ava@fernly.test`, reloading and submitting `AVA@fernly.test` shows "We'll email AVA@fernly.test when Chinese Money Plant is back." and not "You're already on the list".
+- **Contradicts:** `docs/features/back-in-stock.md`: "One sign-up per email per plant, ignoring upper and lower case: signing up again is refused with 'You're already on the list'." OpenAPI: 409 `already_subscribed`.
+- **Suggested fix:** Keep one sign-up per plant per email, compared without letter case, and return 409 `already_subscribed` with that sentence.
+
 ## Suspicions — not yet tested
 
 Things that look different from `docs/PRODUCT.md` (or the API contract), from reading the code and walking the app once. Each one needs a test before it becomes a finding. "Seen" means it showed up once on the walk; "code" means it comes from reading the source only.
@@ -172,7 +208,7 @@ Things that look different from `docs/PRODUCT.md` (or the API contract), from re
 - **Order page after signing out and in as another customer** (Caching / Authorization) — code: sign-out drops the cached cart and order list but not single orders (`['order', id]`), so the second customer may briefly see the first customer's order from the cache. *May contradict:* "An order is private: only the customer who placed it can see it. Anyone else gets "Order not found"" and "Signing out forgets the session on this device."
 - **`CareLevelBadge` for level 3** (Components) — seen: three-dot plants (Fiddle Leaf Fig, Calathea Orbifolia, String of Pearls) say "Moderate care"; code: `LABELS[Math.min(level, 2) - 1]`. *May contradict:* "Care level has three steps: 1 **Easy**, 2 **Moderate**, 3 **Expert**." and the contract's `careLevel` "1 Easy, 2 Moderate, 3 Expert."
 - **Plant page quantity after a "Likes the same light" link** (Pages) — code: quantity and size are page state that isn't reset when the plant id changes. *May contradict:* "**Quantity** starts at 1 …"
-- **Search box input** (Accessibility) — seen: the accessibility tree lists a `searchbox` with no name; code: "Search plants" is a visual hint, not a label. Browse axe scan (`tests/a11y/pages.spec.ts`, test "Browse") did not report a separate rule failure for it (not yet tested with a dedicated assertion). *May contradict:* "every button and form field has a name a screen reader can announce."
+- **Search box input** (Accessibility) — seen: the accessibility tree lists a `searchbox` with no name; code: "Search plants" is a visual hint, not a label. **Executed:** `tests/a11y/back-in-stock.spec.ts` **X1** Browse scan (`npx playwright test tests/a11y/back-in-stock.spec.ts --project=a11y`) reports axe `label`, **critical**, on `.SearchBox-module__input` after searching "String of Pearls". *May contradict:* "every button and form field has a name a screen reader can announce."
 - **Search box focus** (Accessibility) — code: `.input { outline: none; }` in `SearchBox.module.css`, with no other focus style on the input or form. *May contradict:* "everything works with the keyboard alone, and focus is always visible."
 - **Page titles** (Accessibility) — seen: every page, including Cart, Checkout and "Page not found", has the title "Fernly — plants for every windowsill". *May contradict:* "Fernly aims for **WCAG 2.1 level AA** on every page" (WCAG 2.4.2 Page Titled).
 

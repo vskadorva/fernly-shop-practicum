@@ -1,0 +1,19 @@
+{
+  "id": "pl-monstera",
+  "name": "Monstera Deliciosa",
+  "latinName": "Monstera deliciosa",
+  "price": 34.99,
+  "light": "medium",
+  "careLevel": 1,
+  "petSafe": false,
+  "stock": 12,
+  "rating": 4.7,
+  "imageUrl": "/plants/monstera.svg",
+  "description": "Big split leaves that make any corner feel like a jungle. Forgiving and fast-growing.",
+  "sizes": [
+    { "label": "S", "priceDelta": 0 },
+    { "label": "M", "priceDelta": 6 },
+    { "label": "L", "priceDelta": 14 }
+  ],
+  "similar": []
+}
