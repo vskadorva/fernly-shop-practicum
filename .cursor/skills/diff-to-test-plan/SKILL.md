@@ -21,6 +21,8 @@ Route each changed path to test level and specialist:
 | `web/src/pages/**`, `web/src/slots/**` | Cypress UI (mocked API), Playwright e2e, axe on that page | `component-test-design` / `cypress-test-writer` for UI; e2e and a11y per row below |
 | `web/src/api/**` | Playwright e2e | Agent (caching and data flow) |
 | `api/src/**` | Playwright API | Agent with `.cursor/rules/api-testing.mdc` |
+| `api/src/**` | k6 load test | `performance-test-design` skill |
+| `docs/features/**` (section **How fast it must be**) | k6 load test | `performance-test-design` skill |
 | `api/src/schemas.ts` or new OpenAPI paths | Schema on every affected response | Agent with `expectSchema` per api-testing rule |
 | Anything else in `package.json` or config | Full suite | Note in plan; run existing CI matrix |
 
@@ -54,7 +56,8 @@ Rules:
 - Sort rows with money, privacy, and sign-in first.
 - **cases** column: list concrete scenarios per category where they apply; use "—" when a category does not apply.
 - **source**: cite the doc line (e.g. `PRODUCT.md` quote or section); if nothing in docs covers the behavior, write `assumed — ask` and do not invent an expected result.
-- **specialist**: `component-test-design` → `cypress-test-writer`, `change-triage` (agent), or `cypress-test-writer` as appropriate from the path map.
+- **specialist**: `component-test-design` → `cypress-test-writer`, `performance-test-design` (agent runs k6), `change-triage` (agent), or `cypress-test-writer` as appropriate from the path map.
+- **source** for k6 rows: quote the doc's speed target (shoppers, endpoints, percentile, limit, allowed failure rate); if the change is `api/src/**` but no doc gives a target, write `assumed — ask` and cite the baseline rule in `tests/performance/catalog.js`.
 
 ## Stop
 
