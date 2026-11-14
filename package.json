@@ -18,7 +18,9 @@
     "cy:component": "cypress run --component --project web --expose grepTags=-@known-bug",
     "cy:ui": "cypress run --e2e --project web --expose grepTags=-@known-bug",
     "cy:open": "cypress open --project web",
-    "test:pw": "playwright test"
+    "test:pw": "playwright test",
+    "perf:smoke": "mkdir -p reports/k6 && k6 run --env SCENARIO=smoke tests/performance/catalog.js",
+    "perf:load": "mkdir -p reports/k6 && k6 run --env SCENARIO=load tests/performance/catalog.js"
   },
   "engines": {
     "node": ">=20"
