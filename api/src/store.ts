@@ -1,5 +1,6 @@
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 import { ApiError, notFound } from './errors.js';
+import { findPromo, PROMOS } from './promos.js';
 import { SEED_PLANTS, SEED_USERS, type PlantRecord } from './seed.js';
 import type { Cart, CartLine, Order, Plant, PlantSummary, ShippingAddress, SizeLabel, User } from './schemas.js';
 
@@ -43,6 +44,7 @@ class Store {
   private users = new Map<string, UserRecord>();
   private carts = new Map<string, LineRecord[]>();
   private orders = new Map<string, OrderRecord>();
+  private promos = new Map<string, string>();
 
   constructor() {
     this.seed();
@@ -55,6 +57,18 @@ class Store {
     );
     this.carts = new Map();
     this.orders = new Map();
+    this.promos = new Map();
+  }
+
+  applyPromo(userId: string, code: string): Cart {
+    if (this.lines(userId).length === 0) throw new ApiError(400, 'Add a plant before you use a code.', 'empty_cart');
+    this.promos.set(userId, findPromo(code).code);
+    return this.cart(userId);
+  }
+
+  removePromo(userId: string): Cart {
+    this.promos.delete(userId);
+    return this.cart(userId);
   }
 
   private plant(id: string): PlantRecord {
@@ -181,13 +195,19 @@ class Store {
       };
     });
     const subtotal = toCents(lines.reduce((sum, line) => sum + line.lineTotal, 0));
-    const shipping = lines.length === 0 || subtotal > FREE_SHIPPING_FROM ? 0 : SHIPPING_FEE;
+    let shipping = lines.length === 0 || subtotal > FREE_SHIPPING_FROM ? 0 : SHIPPING_FEE;
+    const promo = PROMOS.find((candidate) => candidate.code === this.promos.get(userId));
+    let discount = 0;
+    if (promo?.kind === 'percent') discount = toCents(((subtotal + shipping) * (promo.percent ?? 0)) / 100);
+    if (promo?.kind === 'free-shipping') shipping = 0;
     return {
       lines,
       itemCount: lines.reduce((sum, line) => sum + line.quantity, 0),
       subtotal,
+      discount,
+      promoCode: promo?.code ?? null,
       shipping,
-      total: toCents(subtotal + shipping),
+      total: toCents(subtotal - discount + shipping),
     };
   }
 
@@ -237,12 +257,15 @@ class Store {
       createdAt: new Date().toISOString(),
       lines: cart.lines.map(({ stock: _stock, ...line }) => line),
       subtotal: cart.subtotal,
+      discount: cart.discount,
+      promoCode: cart.promoCode,
       shipping: cart.shipping,
       total: cart.total,
       shippingAddress,
     };
     this.orders.set(order.id, order);
     this.carts.set(userId, []);
+    this.promos.delete(userId);
     return this.view(order);
   }
 

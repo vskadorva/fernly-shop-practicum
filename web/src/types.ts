@@ -50,6 +50,8 @@ export interface Cart {
   lines: CartLine[];
   itemCount: number;
   subtotal: number;
+  discount: number;
+  promoCode: string | null;
   shipping: number;
   total: number;
 }
@@ -67,6 +69,8 @@ export interface Order {
   createdAt: string;
   lines: Omit<CartLine, 'stock'>[];
   subtotal: number;
+  discount: number;
+  promoCode: string | null;
   shipping: number;
   total: number;
   shippingAddress: ShippingAddress;

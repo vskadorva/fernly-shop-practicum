@@ -1,0 +1,148 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pipeline gate checks
+        run: bash scripts/test-gates.sh
+
+  cypress:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run cy:component -- --reporter junit --reporter-options "mochaFile=cypress/results/component-${{ github.sha }}.xml"
+
+      - run: npm run start:web &
+        env:
+          CI: true
+
+      - run: npx wait-on http://localhost:5173
+
+      - run: npm run cy:ui -- --reporter junit --reporter-options "mochaFile=cypress/results/ui-${{ github.sha }}.xml"
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: cypress-results
+          path: web/cypress/results
+          if-no-files-found: ignore
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: cypress-screenshots
+          path: web/cypress/screenshots
+          if-no-files-found: ignore
+
+  playwright:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx playwright install --with-deps chromium
+
+      - run: npm run test:pw
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-reports
+          path: |
+            reports/
+            playwright-report/
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: a11y-report
+          path: a11y-report
+          retention-days: 30
+          if-no-files-found: ignore
+
+  report:
+    needs: [cypress, playwright]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    concurrency:
+      group: qa-report
+      cancel-in-progress: true
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: playwright-reports
+          path: .
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: cypress-results
+          path: web/cypress/results
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: a11y-report
+          path: a11y-report
+
+      - name: Build QA report
+        env:
+          BASE_REF: ${{ github.event_name == 'pull_request' && github.base_ref || github.ref_name }}
+          BASE_SHA: ${{ github.event_name == 'push' && github.event.before || '' }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: node scripts/qa-report.mjs build
+
+      - name: Publish QA report
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/qa-report.mjs publish
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: qa-report
+          path: qa-report
+          retention-days: 90

@@ -1,0 +1,19 @@
+{
+  "items": [
+    {
+      "id": "pl-thai",
+      "name": "Variegated Thai Constellation Monstera (Collector's Edition, Limited Greenhouse Batch, Greenhouse Row Twelve, North Bench)",
+      "latinName": "Monstera deliciosa 'Thai Constellation'",
+      "price": 189,
+      "light": "bright",
+      "careLevel": 3,
+      "petSafe": false,
+      "stock": 2,
+      "rating": 4.9,
+      "imageUrl": "/plants/monstera.svg"
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "pageSize": 12
+}

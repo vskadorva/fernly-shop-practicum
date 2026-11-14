@@ -1,0 +1,19 @@
+{
+  "lines": [
+    {
+      "id": "ln-test-stock",
+      "plantId": "pl-fern",
+      "name": "Maidenhair Fern",
+      "size": "S",
+      "unitPrice": 12.5,
+      "quantity": 3,
+      "lineTotal": 37.5,
+      "stock": 3,
+      "imageUrl": "/plants/maidenhair.svg"
+    }
+  ],
+  "itemCount": 3,
+  "subtotal": 37.5,
+  "shipping": 6.95,
+  "total": 44.45
+}

@@ -1,0 +1,73 @@
+---
+description: Page objects for Fernly's Playwright end-to-end and visual tests — locators and actions live in tests/pages, specs only describe and assert.
+globs: tests/e2e/**, tests/visual/**, tests/pages/**
+alwaysApply: false
+---
+
+# Page objects (Playwright)
+
+## Where locators live
+
+Locators and interactions belong in `tests/pages/*`; specs wire flows and call `expect`.
+
+```typescript
+// ✅ GOOD — tests/e2e/browse.spec.ts
+const browse = new BrowsePage(page);
+await browse.open();
+await browse.selectSort('price-desc');
+await expect(browse.plantsCountHeading).toBeVisible();
+```
+
+```typescript
+// ❌ BAD — locator in the spec
+await page.getByLabel('Sort by').selectOption('price-desc');
+```
+
+## Locator order
+
+Prefer `getByRole`, then `getByLabel`, then `getByText`. Do not use CSS or XPath in page objects.
+
+```typescript
+// ✅ GOOD — tests/pages/BrowsePage.ts
+this.sortBy = page.getByLabel('Sort by');
+this.plantsCountHeading = page.getByRole('heading', { level: 2, name: /\d+ plants/ });
+```
+
+```typescript
+// ❌ BAD — tests/a11y/helpers/scan.ts (not a page object pattern)
+return page.locator(selector).first();
+```
+
+## Actions return value
+
+Action methods perform one user step. Return `void` or `this` / the next page object — never assert.
+
+```typescript
+// ✅ GOOD
+async selectSort(value: string): Promise<BrowsePage> {
+  await this.sortBy.selectOption(value);
+  return this;
+}
+```
+
+```typescript
+// ❌ BAD — assertion inside a page object
+async selectSort(value: string) {
+  await this.sortBy.selectOption(value);
+  await expect(this.plantsCountHeading).toBeVisible();
+}
+```
+
+## Assertions stay in the spec
+
+Page objects expose `Locator`s; only `*.spec.ts` files import `expect` for UI checks.
+
+```typescript
+// ✅ GOOD — tests/e2e/browse.spec.ts
+await expect(browse.firstPlantCardHeading).toContainText(MOST_EXPENSIVE_NAME);
+```
+
+```typescript
+// ❌ BAD — would belong in a page object (never do this)
+await expect(page.getByRole('heading', { level: 3 })).toContainText(name);
+```

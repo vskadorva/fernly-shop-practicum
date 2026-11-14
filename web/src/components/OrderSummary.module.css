@@ -46,6 +46,11 @@
   color: var(--leaf-700);
 }
 
+.discount {
+  color: var(--leaf-800);
+  font-weight: 700;
+}
+
 .hint {
   margin: 0.9rem 0 0;
   padding: 0.55rem 0.7rem;

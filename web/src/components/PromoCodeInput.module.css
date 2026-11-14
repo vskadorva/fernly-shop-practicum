@@ -1,0 +1,63 @@
+.box,
+.applied {
+  padding: 1rem 1.1rem;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.title {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+}
+
+.row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #b9c7b3;
+  border-radius: 10px;
+  text-transform: uppercase;
+}
+
+.apply {
+  border: 0;
+  border-radius: 10px;
+  padding: 0.55rem 1rem;
+  background: var(--leaf-700);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.apply:disabled {
+  background: #9aaa9d;
+  cursor: not-allowed;
+}
+
+.error {
+  margin: 0.5rem 0 0;
+  color: #8a2f22;
+  font-size: 0.9rem;
+}
+
+.applied {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--leaf-50);
+}
+
+.link {
+  border: 0;
+  background: transparent;
+  color: var(--leaf-700);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}

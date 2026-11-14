@@ -57,7 +57,14 @@ export function CheckoutPage() {
             {placeOrder.isPending ? 'Placing order…' : 'Place order'}
           </button>
         </form>
-        <OrderSummary itemCount={data.itemCount} subtotal={data.subtotal} shipping={data.shipping} total={data.total} />
+        <OrderSummary
+          itemCount={data.itemCount}
+          subtotal={data.subtotal}
+          discount={data.discount}
+          promoCode={data.promoCode}
+          shipping={data.shipping}
+          total={data.total}
+        />
       </div>
     </div>
   );

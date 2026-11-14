@@ -1,0 +1,10 @@
+[
+  {
+    "rule": "color-contrast",
+    "page": "Cart",
+    "target": "*",
+    "owner": "design team",
+    "expires": "2026-12-31",
+    "reason": "new brand colors"
+  }
+]

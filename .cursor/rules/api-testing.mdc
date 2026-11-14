@@ -1,0 +1,122 @@
+---
+description: How we test the Fernly shop API — the docs are the oracle, black-box only, reset once per run, schema checks, one tag, evidence labels.
+globs: tests/**
+alwaysApply: false
+---
+
+# Fernly API testing
+
+## 1. Oracle
+
+`docs/PRODUCT.md` and `/openapi.json` define correct behavior. If the running API differs, keep the documented expectation and let the test fail — report the defect; never weaken or rewrite the assertion to match the API. Behavior neither document covers belongs in `FINDINGS.md` or open questions; do not assert it yet.
+
+```typescript
+// ✅ GOOD — docs say stock_limit when quantity exceeds stock
+const res = await request.patch('/api/cart/lines/ln-1', { data: { quantity: 99 } });
+expect(res.status()).toBe(400);
+expect((await res.json()).rule).toBe('stock_limit');
+
+// ❌ BAD — API returned 200, so the test “passes” with wrong expectations
+expect([200, 400]).toContain(res.status());
+```
+
+## 2. Black box
+
+Tests call HTTP only (API project) or the browser against the web app (e2e project). Never import, read, or change anything under `api/src/` or `web/src/`.
+
+```typescript
+// ✅ GOOD
+const res = await request.get('/api/plants');
+
+// ❌ BAD
+import { store } from '../../api/src/store';
+```
+
+## 3. Requests
+
+Use Playwright’s `request` fixture with path-only URLs; host and port come from `baseURL` in `playwright.config.ts` (`API_URL` for API tests, `WEB_URL` for e2e).
+
+```typescript
+// ✅ GOOD
+await request.get('/api/health');
+
+// ❌ BAD
+await request.get('http://localhost:8100/api/plants');
+```
+
+## 4. Data
+
+Each test should stand on seed data after reset, or create what it needs (register a customer, add cart lines). Never call `POST /api/admin/reset` inside a test — only `tests/reset.setup.ts` does that once per run. Do not rely on another test’s side effects except steps in one serial `@e2e` flow.
+
+```typescript
+// ✅ GOOD — unique email for a register test
+const email = `qa-${Date.now()}@fernly.test`;
+
+// ❌ BAD — assumes Ava’s cart still has items from a prior spec
+await request.get('/api/cart');
+```
+
+## 5. Per endpoint
+
+Cover each endpoint with three cases where practical: **positive** (happy path), **negative** (one invalid input or one rule violation at a time → 400 with `validation_error` or the named rule), **error** (unknown id → 404).
+
+```typescript
+// ✅ GOOD — GET /api/plants/{plantId}: 200, unknown id → 404
+
+// ❌ BAD — only GET /api/plants 200, no 404 or validation cases
+```
+
+## 6. Assertions
+
+Assert status; on every 400 assert the exact `rule` when the contract defines one (wrong rule = fail). Assert values that matter (prices, totals, sort order), not merely that a key exists. Validate response shape with `expectSchema` against OpenAPI component schemas from `/openapi.json`.
+
+```typescript
+// ✅ GOOD
+expect(body.rule).toBe('stock_limit');
+expect(body.items[0].price).toBe(50);
+await expectSchema(request, body, 'Plant');
+
+// ❌ BAD
+expect(body).toHaveProperty('rule');
+expect(res.status()).toBe(400); // no rule check
+```
+
+## 7. Tags
+
+Exactly one tag per test: `{ tag: '@api' }` for a single endpoint or contract check, `{ tag: '@e2e' }` for a browser flow. Put the tag on `test()`, never on `describe()`.
+
+```typescript
+// ✅ GOOD
+test('GET /api/plants rejects invalid sort', { tag: '@api' }, async ({ request }) => { ... });
+
+// ❌ BAD
+test.describe('plants', { tag: '@api' }, () => { ... });
+```
+
+## 8. Known bugs
+
+A test for a confirmed bug keeps full assertions and uses `test.fail(true, 'F-NN: <one line>')`. Never delete the test or loosen expectations.
+
+```typescript
+// ✅ GOOD
+test('prices show two decimals in the catalog', { tag: '@e2e' }, async ({ page }) => {
+  test.fail(true, 'F-01: formatPrice drops trailing zeros');
+  // ... full documented expectations ...
+});
+
+// ❌ BAD — bug “fixed” in the test by expecting $12.5
+await expect(page.getByText('$12.5')).toBeVisible();
+```
+
+## 9. Evidence
+
+Label every behavioral claim in comments, reports, or `FINDINGS.md`: **executed** (this run proved it), **inspected only** (read from docs/OpenAPI, not exercised), or **not yet tested**.
+
+```markdown
+<!-- ✅ GOOD -->
+- price-desc sort → highest price first — executed
+- PATCH cart line over stock → stock_limit — not yet tested
+
+<!-- ❌ BAD -->
+- All catalog rules are covered (no label, no proof)
+```

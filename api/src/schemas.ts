@@ -103,6 +103,8 @@ export const CartSchema = z
     lines: z.array(CartLineSchema),
     itemCount: z.number().int(),
     subtotal: money,
+    discount: money.openapi({ description: 'Promo discount on the plants, never on shipping.' }),
+    promoCode: z.string().nullable(),
     shipping: money,
     total: money,
   })
@@ -126,6 +128,8 @@ export const OrderSchema = z
     createdAt: z.string(),
     lines: z.array(CartLineSchema.omit({ stock: true })),
     subtotal: money,
+    discount: money,
+    promoCode: z.string().nullable(),
     shipping: money,
     total: money,
     shippingAddress: ShippingAddressSchema,

@@ -1,0 +1,21 @@
+{
+  "lines": [
+    {
+      "id": "ln-pothos-1",
+      "plantId": "pl-pothos",
+      "name": "Pothos 'Golden'",
+      "size": "S",
+      "unitPrice": 12.5,
+      "quantity": 1,
+      "lineTotal": 12.5,
+      "stock": 30,
+      "imageUrl": "/plants/trailing.svg"
+    }
+  ],
+  "itemCount": 1,
+  "subtotal": 12.5,
+  "discount": 0,
+  "promoCode": null,
+  "shipping": 6.95,
+  "total": 19.45
+}

@@ -76,7 +76,15 @@ export function OrderPage() {
             </li>
           ))}
         </ul>
-        <OrderSummary title="Paid" itemCount={itemCount} subtotal={data.subtotal} shipping={data.shipping} total={data.total} />
+        <OrderSummary
+          title="Paid"
+          itemCount={itemCount}
+          subtotal={data.subtotal}
+          discount={data.discount}
+          promoCode={data.promoCode}
+          shipping={data.shipping}
+          total={data.total}
+        />
       </div>
     </div>
   );
