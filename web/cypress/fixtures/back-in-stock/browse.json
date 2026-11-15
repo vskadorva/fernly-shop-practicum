@@ -1,0 +1,67 @@
+{
+  "items": [
+    {
+      "id": "pl-pearls",
+      "name": "String of Pearls",
+      "latinName": "Curio rowleyanus",
+      "price": 16.5,
+      "light": "bright",
+      "careLevel": 3,
+      "petSafe": false,
+      "stock": 1,
+      "rating": 3.9,
+      "imageUrl": "/plants/succulent.svg"
+    },
+    {
+      "id": "pl-thai",
+      "name": "Variegated Thai Constellation Monstera (Collector's Edition, Limited Greenhouse Batch)",
+      "latinName": "Monstera deliciosa 'Thai Constellation'",
+      "price": 189,
+      "light": "medium",
+      "careLevel": 3,
+      "petSafe": false,
+      "stock": 2,
+      "rating": 4.9,
+      "imageUrl": "/plants/monstera.svg"
+    },
+    {
+      "id": "pl-hoya",
+      "name": "Hoya Carnosa",
+      "latinName": "Hoya carnosa",
+      "price": 21,
+      "light": "bright",
+      "careLevel": 2,
+      "petSafe": true,
+      "stock": 3,
+      "rating": 4.6,
+      "imageUrl": "/plants/trailing.svg"
+    },
+    {
+      "id": "pl-fiddle",
+      "name": "Fiddle Leaf Fig",
+      "latinName": "Ficus lyrata",
+      "price": 49,
+      "light": "bright",
+      "careLevel": 3,
+      "petSafe": false,
+      "stock": 4,
+      "rating": 4.1,
+      "imageUrl": "/plants/monstera.svg"
+    },
+    {
+      "id": "pl-pilea",
+      "name": "Chinese Money Plant",
+      "latinName": "Pilea peperomioides",
+      "price": 15,
+      "light": "medium",
+      "careLevel": 1,
+      "petSafe": true,
+      "stock": 0,
+      "rating": 4.7,
+      "imageUrl": "/plants/succulent.svg"
+    }
+  ],
+  "total": 5,
+  "page": 1,
+  "pageSize": 12
+}

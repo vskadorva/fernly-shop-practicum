@@ -27,6 +27,41 @@ export class BrowsePage {
     });
   }
 
+  /** "Only N left" badge on a catalog card. */
+  onlyLeftBadge(name: string, count: number): Locator {
+    return this.plantCardByName(name).getByText(`Only ${count} left`, { exact: true });
+  }
+
+  /** Any low-stock badge on a catalog card, including "Only 0 left". */
+  anyOnlyLeftBadge(name: string): Locator {
+    return this.plantCardByName(name).getByText(/Only \d+ left/);
+  }
+
+  /** Sold-out overlay on a catalog card. */
+  outOfStockLabel(name: string): Locator {
+    return this.plantCardByName(name).getByText('Out of stock', { exact: true });
+  }
+
+  /** Plant photo on a catalog card. */
+  cardPhoto(name: string): Locator {
+    return this.plantCardByName(name).getByRole('img');
+  }
+
+  /** Save control on a catalog card (icon only, `aria-pressed`). */
+  cardSaveButton(name: string): Locator {
+    return this.plantCardByName(name).getByRole('button');
+  }
+
+  /** Care-level tag on a catalog card. */
+  careTag(name: string): Locator {
+    return this.plantCardByName(name).getByText(/care/);
+  }
+
+  /** Pet tag on a catalog card. */
+  petTag(name: string): Locator {
+    return this.plantCardByName(name).getByText(/pet safe/i);
+  }
+
   /**
    * Opens the catalog at `/`.
    * @returns This browse page.

@@ -1,0 +1,56 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: #fff7ec;
+  border: 1px solid #f1d3a8;
+}
+
+.label {
+  font-weight: 700;
+}
+
+.row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #c9b48f;
+  border-radius: 10px;
+}
+
+.button {
+  border: 0;
+  border-radius: 10px;
+  padding: 0.55rem 1rem;
+  background: #7a3d00;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.button:disabled {
+  background: #b9a58a;
+  cursor: not-allowed;
+}
+
+.error {
+  margin: 0;
+  color: #8a2f22;
+  font-size: 0.9rem;
+}
+
+.done {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  background: var(--leaf-50);
+  color: var(--leaf-800);
+  font-weight: 600;
+}
