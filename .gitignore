@@ -8,6 +8,7 @@ reports/
 qa-report/
 **/cypress/results/
 a11y-report/
+helper-results/
 tests/visual/**/*-darwin.png
 tests/visual/**/*-win32.png
 **/cypress/videos/

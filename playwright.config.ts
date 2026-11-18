@@ -23,6 +23,20 @@ const visualProject =
       ]
     : [];
 
+// The helper tests reset the shop before every test, so they never run next to the other suites.
+const helperProject =
+  process.env.npm_lifecycle_event === 'test:helper'
+    ? [
+        {
+          name: 'helper',
+          testDir: 'tests/helper',
+          testMatch: /.*\.spec\.ts/,
+          dependencies: ['setup' as const],
+          use: { baseURL: webURL },
+        },
+      ]
+    : [];
+
 export default defineConfig({
   testDir: 'tests',
   expect: {
@@ -81,5 +95,6 @@ export default defineConfig({
       dependencies: ['setup'],
     },
     ...visualProject,
+    ...helperProject,
   ],
 });
