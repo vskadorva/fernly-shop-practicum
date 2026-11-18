@@ -14,14 +14,24 @@
     "start:web": "npm run dev -w web",
     "build": "npm run build -w web",
     "typecheck": "npm run typecheck -w api && npm run typecheck -w web",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "cy:component": "cypress run --component --project web --expose grepTags=-@known-bug",
+    "cy:ui": "cypress run --e2e --project web --expose grepTags=-@known-bug",
+    "cy:open": "cypress open --project web",
+    "test:pw": "playwright test",
+    "perf:smoke": "mkdir -p reports/k6 && k6 run --env SCENARIO=smoke tests/performance/catalog.js",
+    "perf:load": "mkdir -p reports/k6 && k6 run --env SCENARIO=load tests/performance/catalog.js"
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.64.1",
     "@types/node": "^22.13.10",
+    "ajv": "^8.20.0",
     "concurrently": "^9.1.2",
+    "dotenv": "^18.0.9",
     "typescript": "^5.8.2"
   }
 }

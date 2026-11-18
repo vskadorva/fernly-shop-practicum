@@ -1,0 +1,28 @@
+{
+  "id": "ord-leafy",
+  "status": "placed",
+  "createdAt": "2026-11-01T15:00:00.000Z",
+  "lines": [
+    {
+      "id": "ln-leafy-1",
+      "plantId": "pl-pothos",
+      "name": "Pothos 'Golden'",
+      "size": "S",
+      "unitPrice": 12.5,
+      "quantity": 1,
+      "lineTotal": 12.5,
+      "imageUrl": "/plants/trailing.svg"
+    }
+  ],
+  "subtotal": 12.5,
+  "discount": 1.25,
+  "promoCode": "LEAFY10",
+  "shipping": 6.95,
+  "total": 18.2,
+  "shippingAddress": {
+    "fullName": "Ava Green",
+    "address": "1 Fern Lane",
+    "city": "Portland",
+    "postalCode": "97201"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "id": "pl-maidenhair",
+      "name": "Maidenhair Fern",
+      "latinName": "Adiantum raddianum",
+      "price": 18,
+      "light": "low",
+      "careLevel": 2,
+      "petSafe": true,
+      "stock": 8,
+      "rating": 4.6,
+      "imageUrl": "/plants/fern.svg"
+    },
+    {
+      "id": "pl-snake",
+      "name": "Snake Plant",
+      "latinName": "Dracaena trifasciata",
+      "price": 24,
+      "light": "low",
+      "careLevel": 1,
+      "petSafe": false,
+      "stock": 20,
+      "rating": 4.8,
+      "imageUrl": "/plants/snake.svg"
+    }
+  ],
+  "total": 2,
+  "page": 1,
+  "pageSize": 12
+}

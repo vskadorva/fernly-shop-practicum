@@ -1,0 +1,19 @@
+{
+  "lines": [
+    {
+      "id": "ln-test-3",
+      "plantId": "pl-snake",
+      "name": "Snake Plant",
+      "size": "S",
+      "unitPrice": 40,
+      "quantity": 1,
+      "lineTotal": 40,
+      "stock": 10,
+      "imageUrl": "/plants/snake.svg"
+    }
+  ],
+  "itemCount": 1,
+  "subtotal": 40,
+  "shipping": 6.95,
+  "total": 46.95
+}

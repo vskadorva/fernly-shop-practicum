@@ -1,0 +1,19 @@
+{
+  "lines": [
+    {
+      "id": "ln-test-long",
+      "plantId": "pl-thai",
+      "name": "Variegated Thai Constellation Monstera (Collector's Edition, Limited Greenhouse Batch, Greenhouse Row Twelve, North Bench)",
+      "size": "S",
+      "unitPrice": 189,
+      "quantity": 1,
+      "lineTotal": 189,
+      "stock": 2,
+      "imageUrl": "/plants/monstera.svg"
+    }
+  ],
+  "itemCount": 1,
+  "subtotal": 189,
+  "shipping": 0,
+  "total": 189
+}

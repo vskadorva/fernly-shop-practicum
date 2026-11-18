@@ -4,6 +4,11 @@ dist/
 .DS_Store
 test-results/
 playwright-report/
+reports/
+qa-report/
+**/cypress/results/
 a11y-report/
-cypress/videos/
-cypress/screenshots/
+tests/visual/**/*-darwin.png
+tests/visual/**/*-win32.png
+**/cypress/videos/
+**/cypress/screenshots/

@@ -53,7 +53,14 @@ export function CartPage() {
           ))}
         </ul>
         <div className={styles.side}>
-          <OrderSummary itemCount={data.itemCount} subtotal={data.subtotal} shipping={data.shipping} total={data.total} />
+          <OrderSummary
+            itemCount={data.itemCount}
+            subtotal={data.subtotal}
+            discount={data.discount}
+            promoCode={data.promoCode}
+            shipping={data.shipping}
+            total={data.total}
+          />
           <CartSummarySlot cart={data} />
           <Link to="/checkout" className={styles.primaryLink}>
             Go to checkout

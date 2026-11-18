@@ -9,10 +9,12 @@ interface OrderSummaryProps {
   subtotal: number;
   shipping: number;
   total: number;
+  discount?: number;
+  promoCode?: string | null;
   title?: string;
 }
 
-export function OrderSummary({ itemCount, subtotal, shipping, total, title = 'Order summary' }: OrderSummaryProps) {
+export function OrderSummary({ itemCount, subtotal, shipping, total, discount = 0, promoCode = null, title = 'Order summary' }: OrderSummaryProps) {
   const missing = Math.round((FREE_SHIPPING_FROM - subtotal) * 100) / 100;
   return (
     <section className={styles.summary} aria-labelledby="order-summary-title">
@@ -28,6 +30,12 @@ export function OrderSummary({ itemCount, subtotal, shipping, total, title = 'Or
             <PriceTag amount={subtotal} />
           </dd>
         </div>
+        {discount > 0 ? (
+          <div className={styles.row}>
+            <dt>Discount{promoCode ? ` (${promoCode})` : ''}</dt>
+            <dd className={styles.discount}>−{formatPrice(discount)}</dd>
+          </div>
+        ) : null}
         <div className={styles.row}>
           <dt>Shipping</dt>
           <dd>{shipping === 0 && itemCount > 0 ? <strong className={styles.free}>Free</strong> : <PriceTag amount={shipping} />}</dd>

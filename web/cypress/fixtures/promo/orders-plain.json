@@ -1,0 +1,30 @@
+[
+  {
+    "id": "ord-plain",
+    "status": "placed",
+    "createdAt": "2026-11-01T15:00:00.000Z",
+    "lines": [
+      {
+        "id": "ln-plain-1",
+        "plantId": "pl-pothos",
+        "name": "Pothos 'Golden'",
+        "size": "S",
+        "unitPrice": 12.5,
+        "quantity": 1,
+        "lineTotal": 12.5,
+        "imageUrl": "/plants/trailing.svg"
+      }
+    ],
+    "subtotal": 12.5,
+    "discount": 0,
+    "promoCode": null,
+    "shipping": 6.95,
+    "total": 19.45,
+    "shippingAddress": {
+      "fullName": "Ava Green",
+      "address": "1 Fern Lane",
+      "city": "Portland",
+      "postalCode": "97201"
+    }
+  }
+]

@@ -1,0 +1,119 @@
+---
+description: How we write Cypress component tests and UI tests with a mocked API in Fernly — Testing Library queries, no fixed waits, fixtures, one tag, honest failures.
+globs: web/cypress/**
+alwaysApply: false
+---
+
+# Cypress tests in Fernly
+
+## 1. Queries
+
+Prefer Testing Library order: `findByRole`, then `findByLabelText`, then `findByText`. Never target CSS module classes or raw tag names.
+
+```tsx
+// ✅ GOOD — web/cypress/component/QuantityStepper.cy.tsx
+cy.findByRole('button', { name: 'Increase quantity' }).click();
+
+// ❌ BAD — class from QuantityStepper.module.css
+cy.get('button.QuantityStepper-module__button').last().click();
+```
+
+## 2. States
+
+Assert `disabled`, `checked`, or values on the DOM node. Chaining `.should()` onto `findByRole` makes failures look like “element not found” when the locator worked.
+
+```tsx
+// ✅ GOOD
+cy.findByRole('button', { name: 'Increase quantity' }).then(($el) =>
+  expect($el, 'Increase quantity at stock limit').to.be.disabled,
+);
+
+// ❌ BAD — same file today; misleading failure text
+cy.findByRole('button', { name: 'Increase quantity' }).should('be.disabled');
+```
+
+## 3. Waiting
+
+Never sleep for a fixed duration. Wait on an intercepted API alias or on what the customer sees.
+
+```tsx
+// ✅ GOOD — UI test on browse
+cy.intercept('GET', '/api/plants*', { fixture: 'plants/browse-positive.json' }).as('plants');
+cy.visit('/');
+cy.wait('@plants');
+cy.findByRole('heading', { name: /browse/i });
+
+// ❌ BAD
+cy.visit('/');
+cy.wait(500);
+```
+
+## 4. Data
+
+Component tests pass props in the mount. UI tests load responses from `web/cypress/fixtures/` — one file per scenario (positive, negative, edge).
+
+```tsx
+// ✅ GOOD — component props in QuantityStepper.cy.tsx
+cy.mount(<QuantityStepper value={3} max={3} onChange={cy.spy()} />);
+
+// ✅ GOOD — fixture per scenario
+cy.fixture('plants/catalog-error.json').then((body) => {
+  cy.intercept('GET', '/api/plants*', { statusCode: 500, body }).as('plantsFail');
+});
+
+// ❌ BAD — huge inline catalog in the spec
+cy.intercept('GET', '/api/plants*', { items: [/* 21 plants pasted here */] });
+```
+
+## 5. Mocks
+
+Stub only Fernly API traffic under `/api/*`, with an alias. Never intercept the Vite app shell or static assets.
+
+```tsx
+// ✅ GOOD
+cy.intercept('GET', '/api/plants*', { fixture: 'plants/browse-positive.json' }).as('plants');
+
+// ❌ BAD
+cy.intercept('GET', '**/*', { fixture: 'plants/browse-positive.json' });
+cy.intercept('GET', '/', { body: '<html>fake</html>' });
+```
+
+## 6. Tags
+
+Exactly one level tag per test: `{ tags: '@component' }` or `{ tags: '@ui' }`. A confirmed product bug adds `@known-bug` so CI can exclude it until fixed (`grepTags=-@known-bug`).
+
+```tsx
+// ✅ GOOD
+it('disables − at the minimum', { tags: '@component' }, () => { /* … */ });
+
+// ❌ BAD — no tag, or tag only on describe
+describe('QuantityStepper', { tags: '@component' }, () => {
+  it('disables − at the minimum', () => { /* … */ });
+});
+```
+
+## 7. App code
+
+Do not change `web/src` to green a test. If the test matches `docs/PRODUCT.md`, record it in `FINDINGS.md` (see F-01).
+
+```markdown
+<!-- ✅ GOOD — FINDINGS.md evidence cites the failing spec -->
+- **Evidence:** `web/cypress/component/QuantityStepper.cy.tsx`, test "disables + at the stock limit"
+
+<!-- ❌ BAD — “fixing” QuantityStepper.tsx value > max to pass the test without product approval -->
+```
+
+## 8. Evidence
+
+Label how each claim was verified: **executed** (test or command run), **inspected** (code or walk only), or **not yet tested**.
+
+```markdown
+<!-- ✅ GOOD -->
+- **Evidence:** … fails under `npm run cy:component` (executed).
+
+<!-- ✅ GOOD — FINDINGS.md suspicions -->
+- **CareLevelBadge** — code: `LABELS[Math.min(level, 2) - 1]` (inspected, not yet tested).
+
+<!-- ❌ BAD -->
+- Quantity stepper probably broken (guess, no test or steps).
+```
