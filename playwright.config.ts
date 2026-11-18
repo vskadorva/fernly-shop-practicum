@@ -23,9 +23,9 @@ const visualProject =
       ]
     : [];
 
-// The helper tests reset the shop before every test, so they never run next to the other suites.
+// Tier A of the helper tests resets the shop before every test, so the helper tests never run next to the other suites.
 const helperProject =
-  process.env.npm_lifecycle_event === 'test:helper'
+  process.env.npm_lifecycle_event?.startsWith('test:helper')
     ? [
         {
           name: 'helper',

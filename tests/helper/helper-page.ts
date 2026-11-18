@@ -35,10 +35,31 @@ export async function freshCustomer(page: Page, request: APIRequestContext): Pro
   if (!login.ok()) throw new Error(`POST /api/auth/login answered ${login.status()}`);
   const { token } = (await login.json()) as { token: string };
 
+  await saveToken(page, token);
+  return token;
+}
+
+/**
+ * Registers a customer no one else uses and signs them in with a saved token, so the
+ * next page load starts signed in with an empty cart. Unlike freshCustomer it leaves
+ * the shop alone, so tests that use it can run side by side.
+ * @returns The customer's token.
+ */
+export async function newCustomer(page: Page, request: APIRequestContext): Promise<string> {
+  const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const res = await request.post('/api/auth/register', {
+    data: { name: `Helper ${id}`, email: `helper-${id}@fernly.test`, password: 'helper-pass-1' },
+  });
+  if (res.status() !== 201) throw new Error(`POST /api/auth/register answered ${res.status()}`);
+  const { token } = (await res.json()) as { token: string };
+  await saveToken(page, token);
+  return token;
+}
+
+async function saveToken(page: Page, token: string): Promise<void> {
   await page.addInitScript(({ key, value }: { key: string; value: string }) => {
     localStorage.setItem(key, value);
   }, { key: TOKEN_KEY, value: token });
-  return token;
 }
 
 export class HelperPage {

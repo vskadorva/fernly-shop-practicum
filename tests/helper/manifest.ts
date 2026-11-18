@@ -11,8 +11,8 @@ export type Entry = {
   example: string;
   then: string;
   result: 'passed' | 'failed' | 'needs judge';
-  /** Share of runs that passed, for tiers that repeat a message. */
-  passRate?: number;
+  /** Runs that passed out of runs made ("9/10"), for tiers that repeat a message. */
+  passRate?: string;
   evidence: string;
 };
 
