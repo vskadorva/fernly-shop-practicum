@@ -21,6 +21,7 @@
     "test:pw": "playwright test",
     "test:helper": "playwright test --project=helper --workers=1",
     "test:helper:b": "playwright test --project=helper --workers=4 tier-b",
+    "helper:report": "node tests/helper/helper-report.mjs",
     "perf:smoke": "mkdir -p reports/k6 && k6 run --env SCENARIO=smoke tests/performance/catalog.js",
     "perf:load": "mkdir -p reports/k6 && k6 run --env SCENARIO=load tests/performance/catalog.js"
   },
