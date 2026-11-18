@@ -1,0 +1,99 @@
+.helper {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.6rem;
+}
+
+.toggle {
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 1.2rem;
+  background: #2f6b3a;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+}
+
+.panel {
+  width: min(22rem, calc(100vw - 2.5rem));
+  border: 1px solid #d7e2d4;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+}
+
+.top {
+  padding: 0.7rem 1rem;
+  background: #eef5e8;
+}
+
+.top h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.log {
+  list-style: none;
+  margin: 0;
+  padding: 0.8rem;
+  max-height: 18rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.you,
+.bot {
+  max-width: 85%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  line-height: 1.35;
+}
+
+.you {
+  align-self: flex-end;
+  background: #2f6b3a;
+  color: #ffffff;
+}
+
+.bot {
+  align-self: flex-start;
+  background: #f1f4ef;
+  color: #1d2a1f;
+}
+
+.form {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.7rem;
+  border-top: 1px solid #e3ebe0;
+}
+
+.form input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #b9c8b6;
+  border-radius: 8px;
+}
+
+.form button {
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  background: #2f6b3a;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.form button:disabled {
+  opacity: 0.6;
+}

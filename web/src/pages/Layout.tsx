@@ -1,6 +1,7 @@
 import { Link, NavLink, Outlet } from 'react-router';
 import { useCart } from '../api/queries';
 import { useAuth } from '../auth/AuthContext';
+import { HelperWidget } from '../components/HelperWidget';
 import styles from './Pages.module.css';
 
 export function Layout() {
@@ -47,6 +48,7 @@ export function Layout() {
         <Outlet />
       </main>
       <footer className={styles.footer}>Fernly is a practice shop for testing. No plants are harmed or shipped.</footer>
+      <HelperWidget />
     </div>
   );
 }

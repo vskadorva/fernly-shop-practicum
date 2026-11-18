@@ -29,6 +29,22 @@ export class CartPage {
     return this.page.getByRole('region', { name: title });
   }
 
+  /** Every line in the cart. */
+  lines(): Locator {
+    return this.page.getByRole('main').getByRole('listitem');
+  }
+
+  /** The cart line for a plant by its display name, optionally in one size. */
+  line(name: string, size?: 'S' | 'M' | 'L'): Locator {
+    const byName = this.lines().filter({ has: this.page.getByText(name, { exact: true }) });
+    return size ? byName.filter({ hasText: `Size ${size} ·` }) : byName;
+  }
+
+  /** The quantity shown in a line's stepper. */
+  lineQuantity(line: Locator): Locator {
+    return line.getByRole('group').getByRole('status');
+  }
+
   /** Strong text showing which promo code is applied. */
   appliedPromoCode(code: string): Locator {
     return this.page.getByText(code, { exact: true });
